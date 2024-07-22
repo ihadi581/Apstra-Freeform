@@ -44,6 +44,7 @@ Here are the basic elements to make the magic happen...
     - Group named “clans” under Root.
     - Group named “vrfs” under overlay.
    # Underlay Part
+   ## loopback Part
    <br>
    ```
     Resource generator named “ipv4_loopback” under
@@ -51,12 +52,9 @@ Here are the basic elements to make the magic happen...
     Scope: node('system', system_type='internal', name='target')
     Allocation Group: loopback
     ```
-    ```
-    ├── telemetry-service-definitions
-    │   └── ddos-protection-protocols-DDoS_Protection_Protocols.json
-    ```
       <img src="Images/ipv4_loopback.png" width="75%" height="75%">
-     <br>
+    <br>
+    ## point-to-point Part
     <br>
     ```
     - Resource generator named “link-underlay-gen” under
@@ -66,6 +64,7 @@ Here are the basic elements to make the magic happen...
     ```
         <img src="Images/link-underlay-gen.png" width="75%" height="75%">
     <br>
+    ## underlay Part
     <br>
     ```
     - Resource generator named “underlay_asn” under
@@ -76,7 +75,7 @@ Here are the basic elements to make the magic happen...
         <img src="Images/underlay_asn.png" width="75%" height="75%">
     <br>
 
-# Overlay Part
+## Overlay Part
 
 <br>
 ```
