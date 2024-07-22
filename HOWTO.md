@@ -59,9 +59,12 @@ Here are the basic elements to make the magic happen...
 # Overlay Part
      - Resource named ‘overlay-asn’ under Root/overlay
      - Action assign all Internal Device
+     
+# vrf Part
+# vlans Part
 
 
-# Note don’t changes named
+# Note: don’t changes named
 
 
 GOOD LUCK!!!
