@@ -51,6 +51,10 @@ Here are the basic elements to make the magic happen...
     Scope: node('system', system_type='internal', name='target')
     Allocation Group: loopback
     ```
+    ```
+    ├── telemetry-service-definitions
+    │   └── ddos-protection-protocols-DDoS_Protection_Protocols.json
+    ```
       <img src="Images/ipv4_loopback.png" width="75%" height="75%">
      <br>
     <br>
