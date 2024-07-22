@@ -76,11 +76,11 @@ Here are the basic elements to make the magic happen...
 
 
 
-
+# Overlay Part 
 <br>
-Overlay Part :
      - Resource named ‘overlay-asn’ under Root/overlay
      - Action assign all Internal Device
+Overlay Capture :
      <img src="Images/overlay-asn.png" width="75%" height="75%">
 <br>
      
