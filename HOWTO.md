@@ -44,13 +44,13 @@ Here are the basic elements to make the magic happen...
     - Group named “clans” under Root.
     - Group named “vrfs” under overlay.
    # Underlay Part
+   <br>
     - Resource generator named “ipv4_loopback” under
       Root/underlay/ipv4_loopback
-        - Scope: node('system', system_type='internal', name='target')
-        - Allocation Group: loopback
-    <br>
+        Scope: node('system', system_type='internal', name='target')
+        Allocation Group: loopback
       <img src="Images/ipv4_loopback.png" width="25%" height="25%">
-    <br>
+     <br>
     - Resource generator named “link-underlay-gen” under
       Root/underlay/link-underlay-gen
         - Scope: node('link', role='internal', link_type='aggregate_link', name='target')
