@@ -45,33 +45,29 @@ Here are the basic elements to make the magic happen...
     - Group named “vrfs” under overlay.
    # Underlay Part
    ## loopback Part
-
-   
+    ```
     - Resource generator named “ipv4_loopback” under
     Root/underlay/ipv4_loopback
     Scope: node('system', system_type='internal', name='target')
     Allocation Group: loopback
- 
-      <img src="Images/ipv4_loopback.png" width="75%" height="75%">
-
-    ## point-to-point Part
-
     ```
+    <br>
+    loopback capture:
+      <img src="Images/ipv4_loopback.png" width="75%" height="75%">
+    <br>
+## point-to-point Part
+
     - Resource generator named “link-underlay-gen” under
       Root/underlay/link-underlay-gen
         - Scope: node('link', role='internal', link_type='aggregate_link', name='target')
         - Allocation Group: p2p
-    ```
         <img src="Images/link-underlay-gen.png" width="75%" height="75%">
 
-    ## underlay Part
-
-    ```
+## underlay Part
     - Resource generator named “underlay_asn” under
       Root/underlay/underlay_asn
         - Scope:node(' system', system_type='internal', name='target')
         - Allocation Group: underlay_allocation
-    ```
         <img src="Images/underlay_asn.png" width="75%" height="75%">
 
 
