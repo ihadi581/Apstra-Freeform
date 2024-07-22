@@ -61,8 +61,8 @@ Here are the basic elements to make the magic happen...
     <br>
     - Resource generator named “underlay_asn” under
       Root/underlay/underlay_asn
-        - Scope:node(' system', system_type='internal', name='target')
-        - Allocation Group: underlay_allocation
+        -> Scope:node(' system', system_type='internal', name='target')
+        -> Allocation Group: underlay_allocation
         <img src="Images/underlay_asn.png" width="75%" height="75%">
     <br>
 
