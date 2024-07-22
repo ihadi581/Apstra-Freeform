@@ -1,0 +1,115 @@
+
+firewall {
+    policer MANAGEMENT-1M {
+        if-exceeding {
+            bandwidth-limit 1m;
+            burst-size-limit 625k;
+        }
+        then discard;
+    }
+    policer MANAGEMENT-5M {
+        if-exceeding {
+            bandwidth-limit 5m;
+            burst-size-limit 625k;
+        }
+        then discard;
+    }
+    family inet {
+        filter protect-re {
+            term ACCEPT-BGP {
+                from {
+                    source-prefix-list {
+                        BGP-NEIGHBORS;
+                    }
+                    protocol tcp;
+                    port 179;
+                }
+                then {
+                    count ACCEPT-BGP;
+                    accept;
+                }
+            }
+            term REJECT-BGP {
+                from {
+                    protocol tcp;
+                    port bgp;
+                }
+                then {
+                    reject;
+                }
+            }
+            term ACCEPT-SSH {
+                from {
+                    source-prefix-list {
+                        ip-management;
+                    }
+                    protocol tcp;
+                    port [ ssh 830 ];
+                }
+                then {
+                    policer MANAGEMENT-5M;
+                    count ACCEPT-SSH;
+                    accept;
+                }
+            }
+            term REJECT-SSH {
+                from {
+                    protocol tcp;
+                    port [ ssh 830 ];
+                }
+                then {
+                    reject;
+                }
+            }
+            term ACCEPT-NTP {
+                from {
+                    source-prefix-list {
+                        NTP-SERVERS;
+                    }
+                    protocol udp;
+                    port ntp;
+                }
+                then {
+                    policer MANAGEMENT-1M;
+                    count ACCEPT-NTP;
+                    accept;
+                }
+            }
+            term REJECT-NTP {
+                from {
+                    protocol udp;
+                    port ntp;
+                }
+                then {
+                    reject;
+                }
+            }
+            term ACCEPT-SNMP {
+                from {
+                    source-prefix-list {
+                        SNMP-CLIENTS;
+                    }
+                    protocol udp;
+                    port [ snmp snmptrap ];
+                }
+                then {
+                    policer MANAGEMENT-5M;
+                    count ACCEPT-SNMP;
+                    accept;
+                }
+            }
+            term REJECT-SNMP {
+                from {
+                    protocol udp;
+                    port [ snmp snmptrap ];
+                }
+                then {
+                    reject;
+                }
+            }
+            term ALLOW-ALL {
+                then accept;
+            }
+        }
+    }
+}

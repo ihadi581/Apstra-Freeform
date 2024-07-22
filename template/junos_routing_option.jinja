@@ -1,0 +1,42 @@
+{% set loopback_ipv4 = function.get_resource_value(resources, 'ipv4_loopback', 'underlay') %}
+{% set overlay_asn = function.get_resource_value(resources, 'overlay-asn', 'overlay') %}
+
+routing-options {
+  router-id {{loopback_ipv4|to_network}};
+  route-distinguisher-id {{loopback_ipv4|to_network}};
+  autonomous-system {{ overlay_asn }} loops 2;
+  resolution {
+    rib bgp.rtarget.0 {
+        resolution-ribs inet.0;
+        }
+{% if 'spine' in system_tags %}
+    rib bgp.l3vpn.0 {
+        resolution-ribs [ inet.3 inet.0 ];
+        }
+{% endif %}
+    }
+    forwarding-table {
+        export [ PFE-LB EVPN-LB ];
+        ecmp-fast-reroute;
+        chained-composite-next-hop {
+           ingress {
+               evpn;                   
+            }
+        }   
+    }
+{% if property_sets.leaking_prefix_import is defined %}
+{% set all_vrf = function.get_resource(resources,'vrfs','overlay')%}
+{%  if all_vrf|length %}
+    rib-groups {
+        DEFAULT_to_OAM {
+            import-rib [ DEFAULT.inet.0 VPN_OAM.inet.0 ];
+            import-policy import-UIM;
+        }                               
+        OAM_to_DEFAULT {
+            import-rib [ VPN_OAM.inet.0 DEFAULT.inet.0 ];
+            import-policy import-UIM;
+        }
+    }
+{%  endif %}
+{% endif %}
+}

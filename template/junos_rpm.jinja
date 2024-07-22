@@ -1,0 +1,49 @@
+services {
+    rpm {
+        probe Underlay_Reachability {
+{%  set bgp_ns = namespace(neighbor_asn=None) %}
+{%  for interface_name, iface in interfaces.items() %}
+{%      if not iface.get('ipv4_address') %}
+{%      continue %}
+{%      endif %}
+{%  set neighbor_interfaces = iface.get('neighbor_interfaces', []) %}
+{%      for neighbor_interface in neighbor_interfaces if neighbor_interface.get('ipv4_address') %}
+{%      set bgp_ns.neighbor_asn = function.get_resource_value(all_resources.get(neighbor_interface.system_id), 'underlay_asn', 'underlay') %}
+            test Underlay_to_{{neighbor_interface.system_hostname}} {
+                probe-type icmp-ping;
+                target address {{ neighbor_interface.ipv4_address }};
+                probe-count 5;
+                probe-interval 1;
+                test-interval 5;
+                source-address {{ iface.get('ipv4_address').split('/')[0] }};
+                thresholds {
+                    total-loss 3;
+                }
+            }    
+{%      endfor %}
+{%  endfor %}
+        }
+{%  if property_sets.rpm_ext is defined %}
+        probe External_Reachability {
+{%      for parent_interface, destination in function.sorted_dict(property_sets.get('rpm_ext', {}).get(hostname, {}))  %}
+{%          for dst in destination.values()|sort(attribute='vxlan_id') %}
+            test Ext_{{ hostname }}_vrf_{{dst.vrf_name}}_to_{{dst.destination_name}} {
+                probe-type icmp-ping;
+                routing-instance {{dst.vrf_name}};
+                target address {{dst.target|to_ip }};
+                probe-count 5;
+                probe-interval 1;
+                test-interval 5;
+                source-address {{ dst.source|to_ip }};
+                thresholds {
+                    total-loss 3;
+                }
+            }  
+{%          endfor %}
+{%      endfor %}
+        }
+{%  endif %}
+    }
+}
+
+

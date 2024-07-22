@@ -1,0 +1,23 @@
+{# junos_system.jinja handles the system hostname #}
+{% include "junos_system.jinja" %}
+
+{# junos_chassis.jinja handles chassis options, such as fpc config for
+   channelized port break-outs on certain device platforms.  This also handles
+   aggregate-devices ethernet device-count for port-channel (aeX) interfaces. #}
+{% include "junos_chassis.jinja" %}
+
+{# junos_interfaces.jinja handles front-panel interface configuration, including
+   interface description, ipv4/ipv6 address assignment, and physical link properties
+   derived from device profiles. #}
+{% include "junos_interfaces.jinja" %}
+
+{# junos_protocols.jinja initiates LLDP collection on all ports for telemetry
+   purposes #}
+{% include "junos_protocols.jinja" %}
+{% include "junos_sflow.jinja" %}
+{% include "junos_protocols.jinja" %}
+{% include "junos_switch_options.jinja" %}
+{% include "junos_policy_options.jinja" %}
+{% include "junos_routing_option.jinja" %}
+{% include "junos_vlans.jinja" %}
+{% include "junos_routing_instances.jinja" %}

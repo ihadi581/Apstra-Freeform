@@ -1,0 +1,19 @@
+{% if 'port-mirroring' in system_tags %}
+forwarding-options {
+        analyzer {
+                MirrorSessionRemote {
+                        input {
+                                ingress {
+                                        interface {{property_sets.miroring['SP-LAB-2'].r_input_ingress_if }};
+                                }
+                                egress {
+                                        interface {{property_sets.miroring['SP-LAB-2'].r_input_egress_if}};
+                                }       
+                        }       
+                        output {
+                                interface {{property_sets.miroring['SP-LAB-2'].r_output_if}};
+                        }
+                }
+        }
+}
+{% endif %}
