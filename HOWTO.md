@@ -67,8 +67,12 @@ Here are the basic elements to make the magic happen...
     <br>
 
 # Overlay Part
+
+<br>
      - Resource named ‘overlay-asn’ under Root/overlay
      - Action assign all Internal Device
+     <img src="Images/overlay-asn.png" width="75%" height="75%">
+    <br>
      
 # vrf Part
 # vlans Part
