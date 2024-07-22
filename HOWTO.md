@@ -48,6 +48,7 @@ Here are the basic elements to make the magic happen...
       Root/underlay/ipv4_loopback
         - Scope: node('system', system_type='internal', name='target')
         - Allocation Group: loopback
+      <img src="Images/ipv4_loopback.png" width="25%" height="25%">
     - Resource generator named “link-underlay-gen” under
       Root/underlay/link-underlay-gen
         - Scope: node('link', role='internal', link_type='aggregate_link', name='target')
