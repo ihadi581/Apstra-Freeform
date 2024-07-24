@@ -96,7 +96,7 @@ Overlay Capture :
 # vlans Part
 ```
     - Resource generator named “vlans” under Root
-        - Create Group with name example "blue.100" > blue is name vlan and 100 is vlan
+        - Create Group with name example "blue.2800" > blue is name vlan and 2800 is vlan
         - Enter data as below : 
         {
               "bgp_irb": "disable", > disable/enable
