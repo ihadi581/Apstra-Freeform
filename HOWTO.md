@@ -43,6 +43,7 @@ Here are the basic elements to make the magic happen...
     - Group named “overlay” under Root.
     - Group named “clans” under Root.
     - Group named “vrfs” under overlay.
+# Resource Allocation Group Part
 # Underlay Part
 ## loopback Part
 ```
