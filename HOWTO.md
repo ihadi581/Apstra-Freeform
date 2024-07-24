@@ -94,7 +94,20 @@ Overlay Capture :
      
 # vrf Part
 # vlans Part
-
+```
+    - Resource generator named “vlans” under Root
+    {
+      "bgp_irb": "disable", > disable/enable
+      "vrf_name": "blue", > name of vrf
+      "peer_ipv4_loopback": "", > peer ipv4 loopback
+      "bfd_minimum": "", > bfd parameter
+      "peer_asn": "", > peer asn
+      "bfd_multiplier": "", > bfd parameter
+      "l3": "enable", > disable/enable
+      "static_route_irb": "disable", > disable/enable
+      "mode_style": "ent-style" > ent-style/sp-style
+    }
+```
 
 # Note: don’t changes named
 
