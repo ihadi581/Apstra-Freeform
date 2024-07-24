@@ -95,6 +95,7 @@ Overlay Capture :
      
 # vrf Part
 # vlans Part
+## Create vlans
 ```
     - Resource generator named “vlans” under Root
         - Create Group with name example "blue.2800" > blue is name vlan and 2800 is vlan
@@ -116,6 +117,8 @@ Overlay Capture :
 Create vlans Capture :
      <img src="Images/create_vlans.png" width="75%" height="75%">
 <br>
+
+## Tag vlans
 
 # Note: don’t changes named
 
