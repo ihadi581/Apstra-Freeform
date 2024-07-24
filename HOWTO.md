@@ -96,18 +96,25 @@ Overlay Capture :
 # vlans Part
 ```
     - Resource generator named “vlans” under Root
-    {
-      "bgp_irb": "disable", > disable/enable
-      "vrf_name": "blue", > name of vrf
-      "peer_ipv4_loopback": "", > peer ipv4 loopback
-      "bfd_minimum": "", > bfd parameter
-      "peer_asn": "", > peer asn
-      "bfd_multiplier": "", > bfd parameter
-      "l3": "enable", > disable/enable
-      "static_route_irb": "disable", > disable/enable
-      "mode_style": "ent-style" > ent-style/sp-style
-    }
+        - Create Group with name example "blue.100" > blue is name vlan and 100 is vlan
+        - Enter data as below : 
+        {
+              "bgp_irb": "disable", > disable/enable
+              "vrf_name": "blue", > name of vrf
+              "peer_ipv4_loopback": "", > peer ipv4 loopback
+              "bfd_minimum": "", > bfd parameter
+              "peer_asn": "", > peer asn
+              "bfd_multiplier": "", > bfd parameter
+              "l3": "enable", > disable/enable
+              "static_route_irb": "disable", > disable/enable
+              "mode_style": "ent-style" > ent-style/sp-style
+        }
+        - save
 ```
+<br>
+Create vlans Capture :
+     <img src="Images/create_vlans.png" width="75%" height="75%">
+<br>
 
 # Note: don’t changes named
 
