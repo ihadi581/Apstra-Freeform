@@ -1,6 +1,6 @@
 # HOWTO
 Here are the basic elements to make the magic happen...
-
+# Create Topology 
 1.  Lay out your systems in the editor.
     - Create internal systems for the switches that Apstra will manage.
     - Create external systems for hosts and other devices that will connect
@@ -8,7 +8,7 @@ Here are the basic elements to make the magic happen...
     - Apply system tags to the internal systems to identify leaf and spine
       devices.  These tags should be named "leaf" for leaf devices and
       "spine" for spine devices.
-
+## Create Links topology 
 2.  Connect your devices.
     - Fabric links must include the tag "fab_link".
     - Host-facing links must include either the "mode_access" or
@@ -23,7 +23,16 @@ Here are the basic elements to make the magic happen...
            or more member links, the tags must be applied to the Aggregated
            link, and not the member links.
 
-3.  Create the following Allocation Groups to be used in the model:
+# Resource Group Part
+  Under Resource Management, create the following:
+    - Group named "lacp" under Root.
+    - Group named “underlay” under Root.
+    - Group named “overlay” under Root.
+    - Group named “clans” under Root.
+    - Group named “vrfs” under overlay.
+
+# Resource Allocation Group Part
+    Create the following Allocation Groups to be used in the model:
     - “underlay-allocation” of Type ASN
         This is what we'll use to dynamically assign ASN's to each
         internal system.
@@ -36,13 +45,7 @@ Here are the basic elements to make the magic happen...
     - "LACP System IDs" of Type Integer
         Use low values for integers (e.g., 1-4094).  We'll use these values
         to generate ESI and LACP System ID values.
-
-4.  Under Resource Management, create the following:
-    - Group named "lacp" under Root.
-    - Group named “underlay” under Root.
-    - Group named “overlay” under Root.
-    - Group named “clans” under Root.
-    - Group named “vrfs” under overlay.
+      
 # Resource Allocation Group Part
 # Underlay Part
 ## loopback Part
