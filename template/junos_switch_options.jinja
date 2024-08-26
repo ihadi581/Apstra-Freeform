@@ -1,5 +1,6 @@
+{% if not 'mac-vrf' in  system_tags %}
 {% set loopback_ipv4 = function.get_resource_value(resources, 'ipv4_loopback', 'underlay') %}
-{% set overlay_asn = function.get_resource_value(resources, 'overlay-asn', 'overlay') %}
+{% set overlay_asn = function.get_resource_value(resources, 'overlay_asn', 'overlay') %}
 
 switch-options {
     vtep-source-interface lo0.0;
@@ -20,3 +21,4 @@ switch-options {
 {%      endfor %}
 {% endif %}
 }
+{% endif %}
