@@ -1,5 +1,5 @@
 {%  set all_vrf = function.get_resource(resources,'vrfs','overlay')%}
-{%  set local_as = function.get_resource_value(resources, 'overlay-asn', 'overlay') %}
+{%  set local_as = function.get_resource_value(resources, 'overlay_asn', 'overlay') %}
 {%- if all_vrf|length -%}
 {%-     for get_vrfs in all_vrf['groups'] -%}
 {%      set ns = namespace() %}
@@ -12,7 +12,7 @@
 {%          set VRF_loopback_peer = function.get_resource_value(resources, 'loopback-peer-vrf', 'overlay', 'vrfs', ns.name) %}
 {%          set VRF_loopback_peer_ipv6 = function.get_resource_value(resources, 'ipv6-loopback-peer-vrf', 'overlay', 'vrfs', ns.name) %}
 {%          set lopback_peer_as = function.get_resource_value(resources, 'loopback-vrf-peer-asn', 'overlay', 'vrfs') %}
-{%          set VRF_id = function.get_resource_value(resources, 'vrf-vxlan-id', 'overlay', 'vrfs', ns.name) %}
+{%          set VRF_id = function.get_resource_value(resources, 'vrf_vxlan_id', 'overlay', 'vrfs', ns.name) %}
 {%          set bfd_multiplier = function.get_resource_value(resources, 'loopback-bfd-multiplier', 'overlay', 'vrfs') %}
 {%          set bfd_minimum = function.get_resource_value(resources, 'loopback-bfd-minimum', 'overlay', 'vrfs') %}
 {%          set dummy_ip = function.get_resource_value(resources, 'vrf-dummy-static', 'overlay', 'vrfs', ns.name) %}
@@ -60,6 +60,20 @@ routing-instances {
                 rib-group inet OAM_to_DEFAULT;
             }
 {%      endif %}
+{%      if 'enable' in get_vrfs.data.vrf_leaking %}
+            interface-routes {
+                rib-group {
+{%          for vrf_list in get_vrfs.data.vrf_parent %}
+{%                  if loop.index == 1 %}
+                    inet {{ ns.name }}_to_{{ vrf_list }}
+{%-                 endif -%}
+{%-                 if loop.index > 1 -%}
+                    -and-{{ vrf_list }}
+{%-                 endif -%}
+{%-         endfor -%};
+                }
+            }
+{%      endif %}  
 {%          if not dummy_ip %}
             static {
                 route 172.16.0.12/32 discard;
@@ -86,7 +100,7 @@ routing-instances {
 {%          set get_peers_ipv6s = function.get_resource_value(resources, 'peer_ipv6_address', 'vlans', ns.vlan_name) %}
 {%          set ALL_vlan_info = function.get_resource(resources,ns.vlan_name, 'vlans') %}
 {%              if get_peers_ipv6s and get_vlans.data.static_route_irb == 'enable' %}
-            rib GiTelkomsel.inet6.0 {
+            rib {{get_vlans.data.vrf_name}}.inet6.0 {
                 static {
                     route {{VRF_loopback_peer_ipv6}} {
                         next-hop {{ get_peers_ipv6s | to_ip }};
@@ -125,7 +139,10 @@ routing-instances {
                 }
             }
             bgp {
-{%-              if VRF_loopback %}
+{%               if VRF_loopback %}
+{%                  if not VRF_loopback_peer %}
+            {% do function.raise_error('Routing-instance requires the system loopback IP Peer address to be included in the loopbacks resource management') %}
+{%                  endif %}
                 group loopback_bgp_{{ns.name}} {
                     type external;      
                         multihop {
@@ -143,7 +160,7 @@ routing-instances {
                         peer-as {{lopback_peer_as }};
                     }
                 }
-{%              endif %}
+{%-              endif %}
 {%  set all_vlans = function.get_resource(resources,'vlans')%}
 {%- if all_vlans|length -%}
 {%-     for get_vlans in all_vlans['groups'] -%}
@@ -198,3 +215,101 @@ routing-instances {
 {%          endif %}
 {%      endfor %}   
 {%- endif -%}
+
+{% if 'mac-vrf' in  system_tags %}
+
+routing-instances {
+    evpn-1 {
+        instance-type mac-vrf;
+        protocols {
+            evpn {
+                encapsulation vxlan;
+                default-gateway no-gateway-community;
+                multicast-mode ingress-replication;
+                extended-vni-list all;
+{% set overlay_asn = function.get_resource_value(resources, 'overlay_asn', 'overlay') %}
+{% set all_vlans = function.get_resource(resources,'vlans')%}
+{%- if all_vlans|length -%}
+    {%- for get_vlans in all_vlans['groups'] -%}
+        {% set ns = namespace() %}
+        {% set ns.name = "" %}
+        {% for vlan_name in get_vlans['label'] %}
+            {% set ns.name = ns.name + vlan_name %}
+        {% endfor %}
+        {% if loop.first %}
+            vni-options {
+        {% endif %}
+{% set ALL_vlan_info = function.get_resource(resources,ns.name,  'vlans') %}
+{% for resource in ALL_vlan_info.resources %}
+        {% if resource.get('value') and resource.get('label') == 'vni' %}
+        {% set vni_id = (resource['value']|int) %}
+                vni {{ vni_id }} {
+            {% for resource  in ALL_vlan_info.resources %}
+            {% if resource.get('value') and resource.get('label') == 'rt' %}
+            {% set rt = (resource['value']|int) %}
+                    vrf-target target:{{ overlay_asn }}:{{ rt }};
+            {% endif %}
+            {% endfor %}
+                    }
+        {% endif %}
+{% endfor %}
+    {% if loop.last %}
+                }
+    {% endif %}
+{%- endfor -%} 
+{% endif %}
+            }
+        }
+{% set loopback_ipv4 = function.get_resource_value(resources, 'ipv4_loopback', 'underlay') %}
+{% set overlay_asn = function.get_resource_value(resources, 'overlay_asn', 'overlay') %}
+        vtep-source-interface lo0.0;
+        service-type vlan-aware;
+        route-distinguisher {{loopback_ipv4|to_network}}:7999;
+        vrf-target target:{{ overlay_asn }}:7999999;
+        {% for interface_name, iface in interfaces.iteritems() %}
+            {% if'tagged_vlans' in iface.link_tags  or 'access' in iface.link_tags %}
+        interface {{interface_name}};
+            {% endif %}
+        {% endfor %}
+        {% set all_vlans = function.get_resource(resources,'vlans')%}
+{%- if all_vlans|length -%}
+    {%- for get_vlans in all_vlans['groups'] -%}
+        {% set ns = namespace() %}
+        {% set ns.name = "" %}
+        {% for vlan_name in get_vlans['label'] %}
+            {% set ns.name = ns.name + vlan_name %}
+        {% endfor %}
+    {% if loop.first %}
+        vlans {
+        {% endif %}
+{% set ALL_vlan_info = function.get_resource(resources,ns.name,  'vlans') %}
+{% for resource  in ALL_vlan_info.resources %}
+{% if resource.get('value') and resource.get('label') == 'vni' %}
+{% set vni_id = (resource['value']|int) %}
+            bd-{{vni_id}} {
+            description {{ns.name}};
+{% for resource  in ALL_vlan_info.resources %}
+        {% if resource.get('value') and resource.get('label') == ns.name %}
+        {% set vlan_id = (resource['value']|int) %}
+            vlan-id {{vlan_id}};
+        {% endif %}
+{% endfor %}
+            vxlan {
+                vni {{vni_id}};
+                }
+{% set get_ipv4s = function.get_resource_value(resources, 'ipv4_address', 'vlans', ns.name) %}
+{% set get_ipv6s = function.get_resource_value(resources, 'ipv6_address', 'vlans', ns.name) %}
+{% if ALL_vlan_info.data.l3 == 'enable' and get_ipv4s or get_ipv6s %}
+            l3-interface irb.{{vni_id}};
+    {% endif %}
+            {% endif %}
+    {% endfor %}
+            }
+    {% if loop.last %}
+        }
+        {% endif %}
+    {%- endfor -%} 
+{% endif %}
+    }
+}
+{% endif %}
