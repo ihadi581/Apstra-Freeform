@@ -1,6 +1,6 @@
 {% set loopback_ipv4 = function.get_resource_value(resources, 'ipv4_loopback', 'underlay') %}
 {% set underlay_asn = function.get_resource_value(resources, 'underlay_asn', 'underlay') %}
-{% set overlay_asn = function.get_resource_value(resources, 'overlay-asn', 'overlay') %}
+{% set overlay_asn = function.get_resource_value(resources, 'overlay_asn', 'overlay') %}
 {% set sys_prop = property_sets.get('custom_sys_properties', {} ) %}
 {% set ns = namespace( ) %}
 {% set ns.mgt4_allowed = [ ] %}
@@ -56,6 +56,35 @@ policy-options {
         then accept;
         }
     }
+{% set all_vrf = function.get_resource(resources,'vrfs','overlay')%}
+{%- if all_vrf|length %}
+{%-     for get_vrfs in all_vrf['groups'] %}
+{%          if 'enable' in get_vrfs.data.vrf_leaking %}
+    policy-statement RCV_FROM_F5_IPV4_PREF_{{get_vrfs.data.local_pref}}_{{all_vrf.data.SITE}} {
+        term 1 {
+            from {
+                route-filter 0.0.0.0/0 exact;
+            }
+            then {
+                local-preference {{get_vrfs.data.local_pref}};
+                accept;
+            }
+        }                                   
+    }
+    policy-statement RCV_FROM_F5_IPV6_PREF_{{get_vrfs.data.local_pref}}_{{all_vrf.data.SITE}} {
+        term 1 {
+            from {
+                route-filter 0.0.0.0/0 exact;
+            }
+            then {
+                local-preference {{get_vrfs.data.local_pref}};
+                accept;
+            }
+        }                                   
+    }
+{%          endif %}
+{%      endfor %}
+{% endif %}
 {%  if 'protect_re' in sys_prop and sys_prop.protect_re.enabled %}
 {%      if ns.mgt4_allowed != [ ] %}
     prefix-list ip-management {
@@ -142,7 +171,7 @@ policy-options {
     }
     community community-esi-in members target:{{ overlay_asn }}:7999999;
 {% set all_vrf = function.get_resource(resources,'vrfs','overlay')%}
-{% set local_as = function.get_resource_value(resources, 'overlay-asn', 'overlay') %}
+{% set local_as = function.get_resource_value(resources, 'overlay_asn', 'overlay') %}
 {%- if all_vrf|length %}
     policy-statement type5_policy {
         term 1 {
@@ -185,7 +214,7 @@ policy-options {
         }
     }
 {% endif %}
-{% set VRF_id = function.get_resource_value(resources, 'vrf-vxlan-id', 'overlay', 'vrfs', ns.name) %}
+{% set VRF_id = function.get_resource_value(resources, 'vrf_vxlan_id', 'overlay', 'vrfs', ns.name) %}
     policy-statement vrf-{{ ns.name }}-import {
         term t1 {
             from {
@@ -209,7 +238,7 @@ policy-options {
 {%          endfor %}   
 {%-     endif -%}
 {% endif %}
-{% set overlay_asn = function.get_resource_value(resources, 'overlay-asn', 'overlay') %}
+{% set overlay_asn = function.get_resource_value(resources, 'overlay_asn', 'overlay') %}
 {% set all_vlans = function.get_resource(resources,'vlans')%}
 {%- if all_vlans|length -%}
 {%-     for get_vlans in all_vlans['groups'] -%}
