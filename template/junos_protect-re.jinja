@@ -1,3 +1,5 @@
+{% set sys_prop = property_sets.get('custom_sys_properties', {} ) %}
+{%  if 'protect_re' in sys_prop and sys_prop.protect_re.enabled %}
 
 firewall {
     policer MANAGEMENT-1M {
@@ -20,6 +22,7 @@ firewall {
                 from {
                     source-prefix-list {
                         BGP-NEIGHBORS;
+                        BGP-NEIGHBORS-RI;
                     }
                     protocol tcp;
                     port 179;
@@ -113,3 +116,4 @@ firewall {
         }
     }
 }
+{%      endif %}
