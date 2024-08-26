@@ -1,6 +1,6 @@
 {% set loopback_ipv4 = function.get_resource_value(resources, 'ipv4_loopback', 'underlay') %}
 {% set underlay_asn = function.get_resource_value(resources, 'underlay_asn', 'underlay') %}
-{% set overlay_asn = function.get_resource_value(resources, 'overlay-asn', 'overlay') %}
+{% set overlay_asn = function.get_resource_value(resources, 'overlay_asn', 'overlay') %}
 protocols {
     lldp {
         port-id-subtype interface-name;
@@ -234,7 +234,7 @@ protocols {
             auto-recovery-time 5;
         }
     }
-{%  set overlay_asn = function.get_resource_value(resources, 'overlay-asn', 'overlay') %}
+{%  set overlay_asn = function.get_resource_value(resources, 'overlay_asn', 'overlay') %}
 {%  set all_vlans = function.get_resource(resources,'vlans')%}
 {%- if all_vlans|length -%}
 {%-     for get_vlans in all_vlans['groups'] -%}
