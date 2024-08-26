@@ -1,3 +1,4 @@
+{% if not 'mac-vrf' in  system_tags %}
 {% set all_vlans = function.get_resource(resources,'vlans')%}
 {%- if all_vlans|length -%}
 {%-     for get_vlans in all_vlans['groups'] -%}
@@ -42,4 +43,5 @@ vlans {
 }
 {%          endif %}
 {%-     endfor -%} 
+{% endif %}
 {% endif %}
