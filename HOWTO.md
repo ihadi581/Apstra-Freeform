@@ -28,8 +28,7 @@ Here are the basic elements to make the magic happen...
 
       <img width="1791" alt="image" src="https://github.com/user-attachments/assets/9af92c9f-04a4-452f-9c99-8e1ef909db6a">
 
-    - Tag the host-facing links with tags to represent the VLANs you want assigned to each host-facing link.  So if you're going to name
-      a VLAN "blue.2800" in your resource group under vlans. select resource vni (why vni because we need name vlan with bd-vni) then you need a tag assign to target system and interfaces.
+    - Tag the host-facing links with tags to represent the VLANs you want assigned to each host-facing link.  So if you're going to name a VLAN "blue.2800" in your resource group under vlans. select          resource vni (why vni because we need name vlan with bd-vni) then you need a tag assign to target system and interfaces.
       this example :
 
       <img width="1354" alt="image" src="https://github.com/user-attachments/assets/fda32c4b-23cc-45ed-881f-73133a59b7c8">
@@ -153,6 +152,21 @@ Create vlans Capture :
 <br>
 
 ## Tag vlans
+for this vlan tag, the intention is to assign resources which have been explained in the previous part in the Create Links topology part tag vlan. this part only explain how to assign.
+
+select vni resource select assign :
+
+<img width="1335" alt="image" src="https://github.com/user-attachments/assets/7145ce57-1930-4e4c-acf9-b83c2dc02b6c">
+
+select the internal system to be selected:
+
+<img width="1407" alt="image" src="https://github.com/user-attachments/assets/aa4bc1cb-a3e8-44ca-a9d6-1c3582ce749b">
+
+select internal system and select interfaces :
+
+<img width="1836" alt="image" src="https://github.com/user-attachments/assets/3f4f75ea-f4a7-493c-b1fd-fc15d59c5db8">
+
+
 
 # Note: don’t changes named
 
