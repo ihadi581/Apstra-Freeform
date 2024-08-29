@@ -14,7 +14,7 @@ Here are the basic elements to make the magic happen...
       "spine" for spine devices.
   
 ## Create Links topology 
-2.  Connect your devices.
+1.  Connect your devices.
     - Create link between spine <> leaf, with select device and select port. this example :
 
        <img width="336" alt="image" src="https://github.com/user-attachments/assets/5b68d9ba-b4e1-476d-a27f-56a1ddc0f17e">
@@ -37,6 +37,26 @@ Here are the basic elements to make the magic happen...
     
     NOTE:  Where you have Link Aggregation Goups (LAGs) composed of one or more member links, the tags must be applied to the Aggregated
            link, and not the member links.
+
+## Create Template configuration
+1. Create/import device from global to spesific blueprint
+   minimal configuration is :
+   
+   <img width="1760" alt="image" src="https://github.com/user-attachments/assets/49c74ef1-a0e2-4c2d-8832-f7115b91b389">
+   
+   note : need to custom config template what we want config to IP Fabric.
+   
+3. assign config template to device internal (spine leaf device)
+   - select internal device
+   - assign template 
+     
+     <img width="392" alt="image" src="https://github.com/user-attachments/assets/61d266d7-d0d9-4ab6-bede-b654c05acf38">
+
+   - choose template `junos-configuration.jinja`
+     
+      <img width="1835" alt="image" src="https://github.com/user-attachments/assets/4b45a039-ef8d-4d5a-b84e-c51de88808d1">
+
+   - assign template config
 
 # Resource Group Part
   Under Resource Management, create the following:
