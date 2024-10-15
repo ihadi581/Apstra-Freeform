@@ -52,6 +52,18 @@ policy-options {
             from {
                 protocol direct;
                 route-filter 0.0.0.0/0 prefix-length-range /32-/32;
+{%      for interface_name, iface in interfaces.items() %}
+{%          if not iface.get('ipv4_address') %}
+{%          continue %}
+{%          endif %}
+{%          set neighbor_interfaces = iface.get('neighbor_interfaces', []) %}
+{%              for neighbor_interface in neighbor_interfaces if neighbor_interface.get('ipv4_address') %}
+{%                  if 'gate-dci' in neighbor_interface.system_tags %}
+                route-filter {{iface.ipv4_address}}/{{iface.ipv4_prefixlen}} exact;
+                route-filter {{neighbor_interface.ipv4_address}}/{{iface.ipv4_prefixlen}} exact;
+{%                  endif %}
+{%                      endfor %}
+{% endfor %}
             }
         then accept;
         }
@@ -194,6 +206,7 @@ policy-options {
             then accept;
         }
     }
+{# start vrf atribute #}
 {% for get_vrfs in all_vrf['groups'] %}
 {%  set ns = namespace() %}
 {%  set ns.name = "" %}
@@ -214,6 +227,7 @@ policy-options {
         }
     }
 {% endif %}
+{% if 'disable' in get_vrfs.data.vrf_dci %}
 {% set VRF_id = function.get_resource_value(resources, 'vrf_vxlan_id', 'overlay', 'vrfs', ns.name) %}
     policy-statement vrf-{{ ns.name }}-import {
         term t1 {
@@ -235,9 +249,33 @@ policy-options {
         }
     }
     community target_{{ overlay_asn }}_{{ VRF_id }} members target:{{ overlay_asn }}:{{ VRF_id }};
+{% else %}
+{% set VRF_id = function.get_resource_value(resources, 'vrf_vxlan_id', 'overlay', 'vrfs', ns.name) %}
+    policy-statement vrf-{{ ns.name }}-import {
+        term t1 {
+            from {
+                community target_{{ VRF_id }}_1;
+            }
+            then {
+                community add target_{{ VRF_id }}_1;
+                accept;
+            }
+        }
+    }
+    policy-statement vrf-{{ ns.name }}-export {
+        term t1 {
+            then {
+                community add target_{{ VRF_id }}_1;
+                accept;
+            }
+        }
+    }
+    community target_{{ VRF_id }}_1 members target:{{ VRF_id }}:1;
+{%     endif %}
 {%          endfor %}   
 {%-     endif -%}
 {% endif %}
+{# end vrf atribute #}
 {% set overlay_asn = function.get_resource_value(resources, 'overlay_asn', 'overlay') %}
 {% set all_vlans = function.get_resource(resources,'vlans')%}
 {%- if all_vlans|length -%}

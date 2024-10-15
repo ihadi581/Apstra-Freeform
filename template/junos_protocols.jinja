@@ -182,7 +182,7 @@ protocols {
 {%          endfor %}
        }
 {%  endif %}
-{%  if 'leaf' in system_tags  %}
+{%  if 'leaf-agg' in system_tags  %}
         group OVERLAY-ACC {
             type external;
             local-as {{overlay_asn}} loops 2;
@@ -222,7 +222,36 @@ protocols {
 {%          endfor %}
         }
 {%  endif %}
+{% set dci_prop = property_sets.get('dci', {}).get(hostname, {})%}
+{% if 'dci' in  system_tags and 'enable' in dci_prop.mode %}
+        group evpn-gw {
+            type external;
+            multihop {
+                ttl 30;
+                no-nexthop-change;
+            }
+            multipath {
+                multiple-as;
+            }
+            neighbor {{dci_prop.peer}} {
+                description facing_to-lf1-dc1-evpn-gateway;
+                multihop {
+                    ttl {{dci_prop.ttl}};;
+                }
+                local-address {{dci_prop.local}};
+                local-as {{dci_prop.local_as}};
+                hold-time 90;
+                family evpn {
+                    signaling;
+                }
+                export evpn_export_policy;
+                peer-as {{dci_prop.asn_peer}};
+            }
+            vpn-apply-export;
+        }
+{%  endif %}
     }
+{% if not 'mac-vrf' in  system_tags %}
     evpn {
         encapsulation vxlan;
         default-gateway no-gateway-community;
@@ -270,5 +299,6 @@ protocols {
     }
 {% endif %}
 {%-     endfor -%} 
+{% endif %}
 {% endif %}
 }

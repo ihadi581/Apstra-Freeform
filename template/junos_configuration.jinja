@@ -11,13 +11,11 @@
    derived from device profiles. #}
 {% include "junos_interfaces.jinja" %}
 
-{# junos_protocols.jinja initiates LLDP collection on all ports for telemetry
-   purposes #}
-{% include "junos_protocols.jinja" %}
-{% include "junos_sflow.jinja" %}
+{# junos_protocols.jinja initiates LLDP collection on all ports for telemetry purposes #}
 {% include "junos_protocols.jinja" %}
 {% include "junos_switch_options.jinja" %}
 {% include "junos_policy_options.jinja" %}
 {% include "junos_routing_option.jinja" %}
+{% include "junos_protect-re.jinja" %}
 {% include "junos_vlans.jinja" %}
 {% include "junos_routing_instances.jinja" %}

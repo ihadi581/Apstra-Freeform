@@ -201,7 +201,7 @@ interfaces {
 {%-         endfor -%} 
 {%          set VRF_loopback = function.get_resource_value(resources, 'ipv4-loopback-vrf', 'overlay', 'vrfs', ns.name) %}
 {%          set VRF_loopback_ipv6 = function.get_resource_value(resources, 'ipv6-loopback-vrf', 'overlay', 'vrfs', ns.name) %}
-{%          set VRF_id = function.get_resource_value(resources, 'vrf-vxlan-id', 'overlay', 'vrfs', ns.name) %}
+{%          set VRF_id = function.get_resource_value(resources, 'vrf_vxlan_id', 'overlay', 'vrfs', ns.name) %}
 {%          set loopback_ipv4 = function.get_resource_value(resources, 'ipv4_loopback', 'underlay') %}
 {%          set sys_prop = property_sets.get('custom_sys_properties', {} ) %}
 {% if loop.first %}
@@ -276,10 +276,10 @@ interfaces {
     mtu 9000;
     {% endif %}
 {%  if get_ipv4s or get_ipv6s %}{% if not 'sp-style' in ALL_vlan_info.data.mode_style %}
-    unit {{get_vlan}} {
+    unit {{get_vni}} {
     description "IRB : L3-vlan-{{get_vlan}}-to-{{ns.name}}-vrf_{{ALL_vlan_info.data.vrf_name}}";
-{%      if not 'leaf-agg' in system_tags %}
-    proxy-macip-advertisement;
+{%-      if not 'leaf-agg' in system_tags %}
+{%-      if not 'mac-vrf' in system_tags %}proxy-macip-advertisement;{%             endif %} 
     virtual-gateway-accept-data;
     virtual-gateway-v4-mac 00:00:5e:01:00:01;
     family inet {
@@ -299,7 +299,7 @@ interfaces {
 {%-         endif %}    
                 }
             }
-{%- endif %}
+{%- endif -%}
 {%  else %}
     mac 00:00:5e:01:00:01;
     family inet {
