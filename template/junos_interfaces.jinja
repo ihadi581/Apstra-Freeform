@@ -17,6 +17,9 @@ interfaces {
 {%  if iface.get('description') %}
         description "{{iface['description']}}";
 {%  endif %}
+{% if 'disable' in iface.link_tags %}
+        disable;
+{%  endif %}
     {# The interface link-mode is derived from the device profile assignment.
        link_mode is one of automatic, full-duplex or half-duplex.  If link-mode
        is not specified in the port-settings on the interface transformation,
