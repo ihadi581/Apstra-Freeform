@@ -81,6 +81,15 @@ Here are the basic elements to make the magic happen...
     - "LACP System IDs" of Type Integer
         Use low values for integers (e.g., 1-4094).  We'll use these values
         to generate ESI and LACP System ID values.
+``` 
+match(
+  node('system', name='system', system_type='internal')
+    .out('hosted_interfaces')
+    .node('interface', if_type='port_channel', name='system_interface')
+    .in_('composed_of')
+    .node('interface', name='target')
+)
+```
       
 # Resource Allocation Group Part
 # Underlay Part
