@@ -1,0 +1,39 @@
+set forwarding-options storm-control-profiles jncie all bandwidth-level 50000
+set forwarding-options storm-control-profiles jncie action-shutdown
+set interfaces ae2 unit 0 family ethernet-switching storm-control store
+
+set snmp community store routing-instance mgmt_junos clients 10.21.85.200/32
+set snmp routing-instance-access
+set system services netconf ssh
+
+set protocols igmp-snooping vlan v400
+
+set system services extension-service request-response grpc ssl port 50011
+set system services extension-service request-response grpc ssl local-certificate local-cert
+
+
+set class-of-service forwarding-classes class STORAGE queue-num 1
+set class-of-service traffic-control-profiles STORAGE scheduler-map STORAGE
+set class-of-service forwarding-class-sets STORAGE class STORAGE
+
+set class-of-service scheduler-maps STORAGE forwarding-class STORAGEscheduler STORAGE
+set class-of-service schedulers STORAGE transmit-rate percent 20
+set class-of-service schedulers STORAGE buffer-size percent 20
+set class-of-service schedulers STORAGE priority low
+
+set class-of-service classifiers dscp STORAGE forwarding-class STORAGE loss-priority low code-points 001011
+set class-of-service interfaces xe-* unit * classifiers dscp STORAGE
+deactivate class-of-service interfaces
+
+
+set groups class-of-service class-of-service classifiers dscp STORAGE import default
+set groups class-of-service class-of-service classifiers dscp STORAGE forwarding-class STORAGE loss-priority low code-points 001011
+set groups class-of-service class-of-service forwarding-classes class STORAGE queue-num 1
+set groups class-of-service class-of-service traffic-control-profiles STORAGE scheduler-map STORAGE
+set groups class-of-service class-of-service interfaces ge-* unit * classifiers dscp STORAGE
+set groups class-of-service class-of-service interfaces ge-* scheduler-map STORAGE
+set groups class-of-service class-of-service scheduler-maps STORAGE forwarding-class STORAGE scheduler STORAGE
+set groups class-of-service class-of-service schedulers STORAGE transmit-rate percent 20
+set groups class-of-service class-of-service schedulers STORAGE buffer-size percent 20
+set groups class-of-service class-of-service schedulers STORAGE priority low
+set apply-groups class-of-service
