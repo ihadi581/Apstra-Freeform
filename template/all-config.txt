@@ -37,3 +37,35 @@ set groups class-of-service class-of-service schedulers STORAGE transmit-rate pe
 set groups class-of-service class-of-service schedulers STORAGE buffer-size percent 20
 set groups class-of-service class-of-service schedulers STORAGE priority low
 set apply-groups class-of-service
+
+
+set policy-options prefix-list MGMT 172.22.1.0/24
+set policy-options prefix-list bgp apply-path "protocols bgp group <*> neighbor <*>"
+set policy-options prefix-list bgp-ri apply-path "routing-instances <*> protocols bgp group <*> neighbor <*>"
+
+set firewall family inet filter re-protect term vxlan from protocol udp
+set firewall family inet filter re-protect term vxlan from port 4789
+set firewall family inet filter re-protect term vxlan then accept
+set firewall family inet filter re-protect term bgp from source-prefix-listbgp
+set firewall family inet filter re-protect term bgp from source-prefix-list bgp-ri
+set firewall family inet filter re-protect term bgp from protocol tcp
+set firewall family inet filter re-protect term bgp from port 179
+set firewall family inet filter re-protect term bgp then accept
+set firewall family inet filter re-protect term allow-telnet-ssh from source-prefix-list MGMT
+set firewall family inet filter re-protect term allow-telnet-ssh from protocol tcp
+set firewall family inet filter re-protect term allow-telnet-ssh from port telnet
+set firewall family inet filter re-protect term allow-telnet-ssh from port ssh
+set firewall family inet filter re-protect term allow-telnet-ssh then accept
+set firewall family inet filter re-protect term deny-telnet-ssh from protocol tcp
+set firewall family inet filter re-protect term deny-telnet-ssh from port telnet
+set firewall family inet filter re-protect term deny-telnet-ssh from port ssh
+set firewall family inet filter re-protect term deny-telnet-ssh then reject
+set firewall family inet filter re-protect term ftp from protocol tcp
+set firewall family inet filter re-protect term ftp from port ftp
+set firewall family inet filter re-protect term ftp from port ftp-data
+set firewall family inet filter re-protect term ftp then accept
+set firewall family inet filter re-protect term icmp from protocol icmp
+set firewall family inet filter re-protect term icmp then accept
+set firewall family inet filter re-protect term discard then log
+set firewall family inet filter re-protect term discard then discard
+set interfaces lo0 unit 0 family inet filter input re-protect
